@@ -1,0 +1,22 @@
+extends _layout
+
+block subpage_data
+	- dp.page.title = "Home"
+	- dp.page.slug = "index"
+	- dp.page.class = "l-index"
+	- dp.page.description = "Dopamine is a lightweight Node app to ease sitebuilding with modular Jade templates and Stylus"
+	- dp.page.keywords = "dopamine,sitebuild,jade,stylus"
+
+mixin article(title,imgsrc)
+	article
+		h1=title
+		block
+
+block subpage_styles
+block subpage_scripts
+
+
+block content
+	hr
+	h1 Content
+	hr

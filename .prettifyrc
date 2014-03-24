@@ -1,0 +1,11 @@
+{
+	indent: 1,
+	indent_size: 1,
+	indent_char: '	',
+	wrap_line_length: 0,
+	preserve_newlines: true,
+	padcomments: true,
+	brace_style: 'expand',
+	max_preserve_newlines: 2,
+	unformatted: ['pre']
+}
