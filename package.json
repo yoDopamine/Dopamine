@@ -1,9 +1,9 @@
 {
-  "name": "stinks",
+  "name": "Dopamine",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "gulp"
+    "start": "gulp serve"
   },
   "devDependencies": {
     "coffee-script": "~1.6.3",
