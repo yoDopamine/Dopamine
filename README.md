@@ -1,4 +1,4 @@
 Dopamine
 ========
 
-Dopamine skeleton
+Dopamine manual
