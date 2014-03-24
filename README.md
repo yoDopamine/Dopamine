@@ -1,4 +1,6 @@
 Dopamine
 ========
 
-Dopamine manual
+Sitebuild scaffolding w/ gulp and yeoman
+
+
