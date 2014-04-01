@@ -3,7 +3,7 @@ extends _layout
 block subpage_data
 	- dp.page.title = "Home"
 	- dp.page.slug = "index"
-	- dp.page.class = "l-index"
+	- dp.page.class = "l-"+dp.page.slug
 	- dp.page.description = "Dopamine is a lightweight Node app to ease sitebuilding with modular Jade templates and Stylus"
 	- dp.page.keywords = "dopamine,sitebuild,jade,stylus"
 
