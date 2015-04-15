@@ -1,152 +1,186 @@
-'use strict';
+var gulp = require('gulp');
+var sass = require('gulp-ruby-sass');
+var jade = require('gulp-jade');
+var prettify = require('gulp-prettify');
+var autoprefixer = require('gulp-autoprefixer');
+var webserver = require('gulp-webserver');
+var es = require('event-stream');
+var webpack = require('webpack');
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+var webpackConfig = require("./webpack.config.js");
 
-var gulp = require('gulp'),
-	es = require('event-stream'),
-	fs = require('fs'),
-	path = require('path'),
-	plugins = require("gulp-load-plugins")(),
-	prettifyrc = fs.readFileSync('.prettifyrc', 'utf-8'),
-
-	config = {
-		project:{
-			name: 'Dopamine'
-		},
-		dist: './dist',
-		distScripts: './dist/scripts',
-		distStyles: './dist/css',
-		distImages: './dist/images',
-		server: {
-			root: ['./dist'],
-			port: 1337,
-			livereload: true
-		}
-	}
-
-
-// Connect Task
-gulp.task('connect', plugins.connect.server(config.server));
-
-// Markup Task
-gulp.task('html', ['markup'], function () {
-	return gulp.src('./dist/**/*.html')
-		.pipe(plugins.connect.reload());
-});
-
-gulp.task('markup', function() {
+/**
+ * Jade
+ */
+gulp.task('jade', function() {
 	gulp.src(['./src/views/*.jade', '!src/views/**/{_,dp-}*.jade'])
-		.pipe(plugins.plumber())
-		.pipe(plugins.jade({
-				pretty: false,
-				data: {dp:{page:{},project: config.project}}
+		.pipe(jade({
+			pretty: false,
+			data: {
+				theme: {},
+				dp:{
+					page:{},
+					project: { name: "DopamineMultipageBoilerplate"}
+				}
+			}
 		}))
-		.pipe(plugins.prettify(prettifyrc))
-		.pipe(gulp.dest(config.dist))
+		.pipe(prettify({
+			indent: 1,
+			indent_size: 1,
+			indent_char: '	',
+			wrap_line_length: 0,
+			preserve_newlines: true,
+			padcomments: true,
+			brace_style: 'expand',
+			max_preserve_newlines: 2,
+			unformatted: ['pre']
+		}))
+		.pipe(gulp.dest('./dist'));
 });
 
-// Stylus compiler task
-gulp.task('stylus', function () {
-	return gulp.src(['./src/stylus/main.styl'])
-	.pipe(plugins.plumber())
-	.pipe(plugins.stylus({
-		pretty: false
-		}), plugins.util.log('Compiling stylus files...'))
-	.pipe(plugins.autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'), plugins.util.log('Applying autoprefixer...'))
-	.pipe(gulp.dest(config.distStyles))
-	.pipe(plugins.connect.reload(), plugins.util.log('Reloading browser...'));
+/**
+ * Scss
+ */
+gulp.task('scss', function() {
+    return sass('src/scss/main.scss', { sourcemap: false })
+		.on('error', function (err) {
+			console.error('Error', err.message);
+		})
+        .pipe(autoprefixer('last 2 version', 'ie 9'))
+        .pipe(gulp.dest('dist/css'));
 });
 
+/**
+ * Vendor bundle
+ */
+gulp.task("vendor", function(callback) {
+	gulp.src([
+		'./bower_components/jquery/dist/jquery.js',
+		// './bower_components/underscore/underscore.js',
+		// './bower_components/jcrop/js/jquery.Jcrop.min.js',
+		// './bower_components/jquery.cookie/jquery.cookie.js',
+		// './bower_components/dropzone/downloads/dropzone.js',
+		// './bower_components/imagelightbox/src/imagelightbox.js',
+		// './bower_components/jquery.populate/jquery.populate.js',
+		// './bower_components/imagesloaded/imagesloaded.pkgd.min.js',
+		// './bower_components/matchHeight/jquery.matchHeight-min.js',
+		// './bower_components/ubilabs-geocomplete/jquery.geocomplete.js',
+		'./bower_components/jquery.browser/dist/jquery.browser.min.js',
+		// './bower_components/jquery.validation/dist/jquery.validate.min.js',
+		// './bower_components/jquery.validation/dist/additional-methods.js',
+		// './bower_components/jquery.inputmask/dist/inputmask/jquery.inputmask.js',
+		// './bower_components/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js',
+		// './bower_components/raty/lib/jquery.raty.js',
+		// './src/coffee/vendor/modernizr.custom.js', // prior to codrops-menu.js
+		// './bower_components/sly/dist/sly.min.js',
+		// './src/coffee/vendor/codrops-menu.js',
+		// './src/coffee/vendor/video.js',
+		// './src/coffee/vendor/bigvideo.js',
 
-gulp.task('coffee', function () {
-	var config = {
-		debug: false,
-		insertGlobals : true,
-		transform: ['coffeeify',
-		 ],
-		shim: {
-			console: {
-				path: './vendor/console-polyfill/index.js',
-				exports: 'window'
-			},
-			jquery: {
-				path: './vendor/jquery/dist/jquery.min.js',
-				exports: '$'
-			},
-		}
-	};
+		// Angular
+		// './bower_components/angular/angular.js',
+		// './bower_components/angular-route/angular-route.js',
+		// './bower_components/angular-touch/angular-touch.min.js',
+		// './bower_components/angular-sanitize/angular-sanitize.js',
 
-	var bundle = gulp.src('./src/coffee/main.coffee', {
-		read: false
-	})
+		// jQuery UI components
+		// './bower_components/jquery.ui/ui/datepicker.js',
+		// './bower_components/jquery.ui/ui/core.js',
+		// './bower_components/jquery.ui/ui/widget.js',
+		// './bower_components/jquery.ui/ui/mouse.js',
+		// './bower_components/jquery.ui/ui/position.js',
+		// './bower_components/jquery.ui/ui/menu.js',
+		// './bower_components/jquery.ui/ui/autocomplete.js',
+		// './bower_components/jquery.ui/ui/slider.js',
 
-	return bundle
-		.pipe(plugins.browserify(config))
-		.pipe(plugins.rename('bundle.js'))
-		.pipe(gulp.dest('./dist/scripts'))
-		// .pipe(gulp.dest(config.distScripts))
-		.pipe(plugins.connect.reload());
+		// Bootstrap components
+		// './bower_components/bootstrap-js-components/dist/alert.js',
+		// './bower_components/bootstrap-js-components/dist/collapse.js',
+		// './bower_components/bootstrap-js-components/dist/dropdown.js',
+		// './bower_components/bootstrap-js-components/dist/transition.js',
+		// './bower_components/bootstrap-js-components/dist/modal.js',
+		// './bower_components/bootstrap-js-components/dist/tab.js',
+		// './bower_components/bootstrap-js-components/dist/tooltip.js',
+		// './bower_components/bootstrap-js-components/dist/popover.js',
+		// './bower_components/bootstrap-js-components/dist/scrollspy.js',
+		// './bower_components/bootstrap-js-components/dist/dropdown.js',
+		// './bower_components/bootstrap-js-components/dist/affix.js',
+
+		// Ony for dev:
+		// './bower_components/holderjs/holder.js',
+	])
+	.pipe(concat({ path: 'vendor.js' }))
+	// .pipe(uglify({ mangle: false }))
+	.pipe(gulp.dest('./dist/scripts'));
 });
 
-
-// Minify images
-gulp.task('imagemin', function () {
-	return es.concat(
-		gulp.src('./src/images/**/*.png')
-			.pipe(plugins.imagemin())
-			.pipe(gulp.dest('./dist/images')),
-		gulp.src('./src/images/**/*.jpg')
-			.pipe(plugins.imagemin())
-			.pipe(gulp.dest('./dist/images')),
-		gulp.src('./src/images/**/*.gif')
-			.pipe(plugins.imagemin())
-			.pipe(gulp.dest(config.distImages))
+/**
+ * Application Scripts
+ */
+gulp.task("webpack", function(callback) {
+	// modify some webpack config options
+	var myConfig = Object.create(webpackConfig);
+	myConfig.plugins = myConfig.plugins.concat(
+		new webpack.ProvidePlugin({
+			// jQuery: "jquery",
+			// $: "jquery"
+		}),
+		new webpack.optimize.DedupePlugin()
+		// new webpack.optimize.UglifyJsPlugin()
+		// new webpack.optimize.CommonsChunkPlugin("commons.chunk.js")
 	);
+
+	// run webpack
+	webpack(myConfig, function(err, stats) {
+		if(err) throw new gutil.PluginError("webpack", err);
+		console.log("[webpack]", stats.toString({
+            // output options
+        }));
+		// plugins.util.log("[webpack]", stats.toString({
+		//colors: true
+		// }));
+		callback();
+	});
 });
 
-// Transfer files for distribution
+/**
+ * Serve and Livereload
+ */
+gulp.task('webserver', function() {
+	gulp.src('./dist')
+	.pipe(webserver({
+		livereload: true,
+		directoryListing: true,
+		open: false,
+		port: 8001
+	}));
+});
+
+/**
+ * Copy static files
+ */
 gulp.task('static', function () {
-	return es.concat(
-		gulp.src('./src/fonts/**/*')
-			.pipe(gulp.dest('./dist/fonts'))
+	// Fonts
+		// .. just put at dist/fonts/
+	// Images
+		// .. Add image optimizer here
+	es.concat(
+		gulp.src('./src/images/**/*')
+			.pipe(gulp.dest('./dist/images'))
 	);
 });
 
-
-
-gulp.task('watch', function () {
-	gulp.watch(['src/stylus/**/*.styl'], ['stylus']);
-	gulp.watch(['src/coffee' + '/**/*.{coffee,js}'], ['coffee']);
-	gulp.watch(['src/views/**/*.jade'], ['html']);
-	gulp.watch(['src/images/**/*'], ['imagemin']);
-
-	// Static file changes
-	gulp.watch(['src/static/**/*.*'], ['static']);
+/**
+ * Watch
+ */
+gulp.task('watch', function() {
+    // gulp.watch('src/js/*.js', ['scripts']);
+    gulp.watch('src/coffee/**/*.*', ['webpack']);
+    gulp.watch('src/views/**/*.jade', ['jade']);
+    gulp.watch('src/scss/**/*.scss', ['scss']);
+    gulp.watch('src/images/**/*.*', ['static']);
 });
 
-gulp.task('clean', function () {
-	gulp.src(config.dist, {read: false})
-		.pipe(plugins.clean());
-});
-
-gulp.task('build', [
-	'markup',
-	'stylus',
-	'coffee',
-	'imagemin',
-	'static'
-	], function () {
-	plugins.util.log('Building project...');
-});
-gulp.task('build-code', [
-	'markup',
-	'stylus',
-	'coffee'
-	], function () {
-	plugins.util.log('Building [code] project...');
-});
-
-gulp.task('serve', ['connect', 'build', 'watch']);
-gulp.task('serve-code', ['connect', 'build-code', 'watch']);
-
-gulp.task('default', ['serve', 'watch'], function () {
-	plugins.util.log('Watching for file changes...');
-});
+gulp.task('default', ['jade', 'scss', 'webpack', 'watch', 'webserver']);
+gulp.task('init', ['static', 'default']);

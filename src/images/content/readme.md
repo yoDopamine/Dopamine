@@ -1,0 +1,1 @@
+All images that is more like content. E.g.:  member pics and article dummy images.

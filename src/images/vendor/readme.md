@@ -1,0 +1,1 @@
+All images from 3rd party libs. E.g.: jQuery UI

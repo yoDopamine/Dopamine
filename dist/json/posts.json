@@ -1,0 +1,14 @@
+{
+	"status": 1,
+	"message": "Success",
+	"posts": [
+		{
+			id: 1,
+			title: "Article title"
+		},
+		{
+			id: 2,
+			title: "Article 2 title"
+		},
+	]
+}

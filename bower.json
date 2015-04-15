@@ -1,10 +1,11 @@
 {
-  "name": "Dopamine",
+  "name": "multipageBoilerplate",
+  "version": "3.0.0",
   "authors": [
-    "Gabor Zsoter <helo@zsitro.com>"
+    "zsitro <helo@zsitro.com>"
   ],
-  "private": true,
   "license": "MIT",
+  "homepage": "zsitro.com",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -13,7 +14,7 @@
     "tests"
   ],
   "dependencies": {
-      "jquery": "~2.1.0",
-      "console-polyfill": "~0.1.1"
+    "jquery": "~2.1.3",
+    "jquery.browser": "~0.0.7"
   }
 }

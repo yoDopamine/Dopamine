@@ -1,9 +1,10 @@
-$ = require 'jquery'
-isPage = require './components/ispage.coffee'
+require("expose?App!./app.coffee").bootstrap(global._App_)
+console.log '*Webpack boilerplate*', global.$.fn.jquery
+console.log '`global App`', App
 
-console.log 'ProjectName'
-console.log 'jQuery', $.fn.jquery
-
-#Things here
-if isPage 'index'
-	console.log 'index page'
+# Common dom:ready
+# ---------------------------------------------- #
+$( ->
+	# log 'dom:ready'
+	# More lines here -> more dirt
+)

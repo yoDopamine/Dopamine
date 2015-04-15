@@ -22,22 +22,17 @@ head
 	+dp_head_favicon('apple-touch-icon-precomposed','images/favicons/favicon.png', '152x152')
 	+dp_head_favicon('ms-application','images/favicons/favicon.png', '#FFFFFF')
 
-
-
 	//- link(rel='stylesheet', href='public/css/bundle-libs.css')
 	link(rel='stylesheet', href='css/main.css')
 
-	+dp_vendor('modernizr')
-	//- +dp_vendor('respond')
+	//- +dp_vendor('modernizr')
 
 body(class=dp.page.class)
 
 	//- +dpsn_oldies()
 
-
-
 	// COMMON HEADER
-	h1 Header
+	h1 Header yeey!
 	// END OF COMMON HEADER
 
 
@@ -50,11 +45,18 @@ body(class=dp.page.class)
 
 	// COMMON FOOTER
 	h1 Footer
+	ul
+		li
+			a(href="http://disneyland.com") External link test
 
+	script.
+		_App_ = {};
+		_App_.propFromServer = 'JOLO!';
 
-	script(src='scripts/bundle.js')
+	script(src='scripts/vendor.js')
+	script(src='scripts/application.common.js')
 
-//-block subpage_scripts
+	block subpage_scripts
 
 
 //- +dpsn_google_analytics('UA-XXXX-X')

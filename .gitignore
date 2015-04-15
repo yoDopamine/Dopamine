@@ -1,8 +1,8 @@
 *.DS_Store
 .idea/
 *.sublime-*
-node_modules/
-dist/
 dist.zip
 regression/
-vendor/
+bower_components
+node_modules
+.sass-cache
